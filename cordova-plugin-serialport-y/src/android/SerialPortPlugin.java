@@ -11,6 +11,7 @@ import com.cl.serialportlibrary.SimpleSerialPortManager;
 public class SerialPortPlugin extends CordovaPlugin {
     private SimpleSerialPortManager serialPortManager;
     private CallbackContext readCallback;
+    private boolean isInitialized = false;
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -45,6 +46,17 @@ public class SerialPortPlugin extends CordovaPlugin {
                                        CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
+                // 如果已经初始化，先关闭之前的串口
+                if (isInitialized && serialPortManager != null) {
+                    try {
+                        serialPortManager.closeSerialPort();
+                    } catch (Exception e) {
+                        // 忽略关闭时的错误，继续重新初始化
+                    }
+                    serialPortManager = null;
+                    readCallback = null;
+                }
+
                 // 配置串口参数
                 new SimpleSerialPortManager.QuickConfig()
                     .setIntervalSleep(intervalSleep)
@@ -69,8 +81,10 @@ public class SerialPortPlugin extends CordovaPlugin {
                     }
                 });
                 
+                isInitialized = true;
                 callbackContext.success("Serial port initialized and opened successfully");
             } catch (Exception e) {
+                isInitialized = false;
                 callbackContext.error(e.getMessage());
             }
         });
@@ -103,6 +117,10 @@ public class SerialPortPlugin extends CordovaPlugin {
     private void sendData(String data, CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
+                if (!isInitialized || serialPortManager == null) {
+                    callbackContext.error("Serial port is not initialized. Please call init() first.");
+                    return;
+                }
                 serialPortManager.sendData(data);
                 callbackContext.success("Data sent successfully");
             } catch (Exception e) {
@@ -114,9 +132,13 @@ public class SerialPortPlugin extends CordovaPlugin {
     private void closeSerialPort(CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
-                serialPortManager.closeSerialPort();
-                // 关闭时清理回调
+                if (serialPortManager != null) {
+                    serialPortManager.closeSerialPort();
+                }
+                // 关闭时清理状态
+                serialPortManager = null;
                 readCallback = null;
+                isInitialized = false;
                 callbackContext.success("Serial port closed successfully");
             } catch (Exception e) {
                 callbackContext.error(e.getMessage());
