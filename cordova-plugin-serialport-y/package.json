@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-serialport-y",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Cordova plugin for serial port communication using com.github.cl-6666:serialPort library",
   "cordova": {
     "id": "cordova-plugin-serialport-y",
