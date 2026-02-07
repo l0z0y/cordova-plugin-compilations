@@ -30,9 +30,13 @@ public class SerialPortPlugin extends CordovaPlugin {
         } else if (action.equals("listen")) {
             this.setDataListener(callbackContext);
             return true;
-        } else if (action.equals("send")) {
+        } else if (action.equals("sendBytes")) {
+            String hexData = args.getString(0);
+            this.sendBytes(hexData, callbackContext);
+            return true;
+        } else if (action.equals("sendString")) {
             String data = args.getString(0);
-            this.sendData(data, callbackContext);
+            this.sendString(data, callbackContext);
             return true;
         } else if (action.equals("close")) {
             this.closeSerialPort(callbackContext);
@@ -145,21 +149,42 @@ public class SerialPortPlugin extends CordovaPlugin {
         return bytes;
     }
 
-    private void sendData(String data, CallbackContext callbackContext) {
+    /**
+     * 发送字节数组（hex 字符串转换为字节数组）
+     */
+    private void sendBytes(String hexData, CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
                 if (!isInitialized || serialPortManager == null) {
                     callbackContext.error("Serial port is not initialized. Please call init() first.");
                     return;
                 }
-                // 将 hex 字符串转换为字节数组，然后转换为字符串发送
-                // 使用 ISO-8859-1 编码将字节数组转换为字符串，保持字节值不变
-                byte[] bytes = hexToBytes(data);
-                String dataToSend = new String(bytes, java.nio.charset.StandardCharsets.ISO_8859_1);
-                serialPortManager.sendData(dataToSend);
-                callbackContext.success("Data sent successfully");
+                // 将 hex 字符串转换为字节数组
+                byte[] bytes = hexToBytes(hexData);
+                // 使用 sendData(byte[]) 方法发送字节数组
+                serialPortManager.sendData(bytes);
+                callbackContext.success("Bytes sent successfully");
             } catch (Exception e) {
-                callbackContext.error("Failed to send data: " + e.getMessage());
+                callbackContext.error("Failed to send bytes: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 发送字符串
+     */
+    private void sendString(String data, CallbackContext callbackContext) {
+        cordova.getThreadPool().execute(() -> {
+            try {
+                if (!isInitialized || serialPortManager == null) {
+                    callbackContext.error("Serial port is not initialized. Please call init() first.");
+                    return;
+                }
+                // 直接使用 sendData(String) 方法发送字符串
+                serialPortManager.sendData(data);
+                callbackContext.success("String sent successfully");
+            } catch (Exception e) {
+                callbackContext.error("Failed to send string: " + e.getMessage());
             }
         });
     }

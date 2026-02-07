@@ -37,13 +37,22 @@ module.exports = {
         exec(success, error, "SerialPort", "listen", []);
     },
     /**
-     * 发送数据
-     * @param {String} data - 要发送的数据，支持十六进制字符串格式（例如 "0A1B2C"），会自动转换为字节数组发送
+     * 发送字节数组（hex 字符串格式）
+     * @param {String} hexData - 十六进制字符串，例如 "0A1B2C"，会自动转换为字节数组发送
      * @param {Function} success - 成功回调
      * @param {Function} error - 错误回调
      */
-    send: function (data, success, error) {
-        exec(success, error, "SerialPort", "send", [data]);
+    sendBytes: function (hexData, success, error) {
+        exec(success, error, "SerialPort", "sendBytes", [hexData]);
+    },
+    /**
+     * 发送字符串
+     * @param {String} data - 要发送的字符串，例如 "AT+CMD\r\n"
+     * @param {Function} success - 成功回调
+     * @param {Function} error - 错误回调
+     */
+    sendString: function (data, success, error) {
+        exec(success, error, "SerialPort", "sendString", [data]);
     },
     /**
      * 关闭串口

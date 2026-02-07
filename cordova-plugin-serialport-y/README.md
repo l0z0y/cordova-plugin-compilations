@@ -56,14 +56,25 @@ SerialPort.init(
     }
 )
 
-// 发送数据（十六进制字符串格式，例如 "0A1B2C"）
-SerialPort.send(
+// 发送字节数组（十六进制字符串格式，例如 "0A1B2C"）
+SerialPort.sendBytes(
     "0A1B2C",  // 发送字节 0x0A, 0x1B, 0x2C
     function () {
-        console.log("TX ok")
+        console.log("Bytes sent ok")
     },
     function (err) {
-        console.error("TX error", err)
+        console.error("Send bytes error", err)
+    }
+)
+
+// 发送字符串
+SerialPort.sendString(
+    "AT+CMD\r\n",  // 发送字符串
+    function () {
+        console.log("String sent ok")
+    },
+    function (err) {
+        console.error("Send string error", err)
     }
 )
 
@@ -110,9 +121,15 @@ cordova.plugins.serialPort.listen(onData, onError)
     -   `error(err)`：出错回调
     -   注意：此方法会保持回调连接，持续接收数据
 
--   `SerialPort.send(data, success, error)`
+-   `SerialPort.sendBytes(hexData, success, error)`
 
-    -   `data` string：要发送的数据，支持十六进制字符串格式（例如 "0A1B2C"），会自动转换为字节数组发送
+    -   `hexData` string：十六进制字符串格式（例如 "0A1B2C"），会自动转换为字节数组发送
+    -   `success`：发送成功回调
+    -   `error`：发送失败回调
+
+-   `SerialPort.sendString(data, success, error)`
+
+    -   `data` string：要发送的字符串（例如 "AT+CMD\r\n"），直接以字符串形式发送
     -   `success`：发送成功回调
     -   `error`：发送失败回调
 
