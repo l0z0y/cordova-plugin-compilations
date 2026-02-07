@@ -148,7 +148,7 @@ cordova plugin add /path/to/plugins/cordova-plugin-esptouch
 各个插件使用不同的许可证，请查看各插件的 README.md 或 LICENSE 文件。
 
 - `cordova-plugin-floating-window`: Apache-2.0
-- `cordova-plugin-serialport`: ISC
+- `cordova-plugin-serialport-y`: ISC
 - `cordova-plugin-iflytek-aikit`: MIT
 - `cordova-plugin-y-utils`: ISC
 - `cordova-plugin-esptouch`: MIT

@@ -1,4 +1,4 @@
-# cordova-plugin-serialport
+# cordova-plugin-serialport-y
 
 一个用于在 Cordova 应用中访问 Android 串口的插件，支持持续监听串口数据，并将接收的原始字节以「大写十六进制字符串」形式回调给 JS。
 

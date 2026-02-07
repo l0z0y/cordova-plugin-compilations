@@ -88,7 +88,7 @@ plugin/
 ├── cordova-plugin-esptouch/        # ESP8266/ESP32 配网插件
 ├── cordova-plugin-floating-window/ # 悬浮窗插件
 ├── cordova-plugin-iflytek-aikit/  # 讯飞语音 AI 插件
-├── cordova-plugin-serialport/      # 串口通信插件
+├── cordova-plugin-serialport-y/    # 串口通信插件
 └── cordova-plugin-y-utils/          # 工具类插件
 ```
 

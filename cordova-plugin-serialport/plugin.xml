@@ -8,8 +8,8 @@
     </description>
     <license>Apache 2.0</license>
     <keywords>cordova,serial,port</keywords>
-    <repo>https://github.com/your-repo/cordova-plugin-serialport</repo>
-    <issue>https://github.com/your-repo/cordova-plugin-serialport/issues</issue>
+    <repo>https://github.com/your-repo/cordova-plugin-serialport-y</repo>
+    <issue>https://github.com/your-repo/cordova-plugin-serialport-y/issues</issue>
 
     <engines>
         <engine name="cordova" version=">=9.0.0" />
