@@ -181,6 +181,13 @@ cordova.plugins.serialPort.listen(onData, onError)
 
 ## 版本变更
 
+-   v1.0.5
+    -   新增 sendBytes 方法：发送字节数组（hex 字符串格式）
+    -   新增 sendString 方法：发送字符串
+    -   添加 openSerialPort 返回值检查，分别处理配置和打开的成功/失败
+    -   添加重复 init 检查，避免重复初始化
+    -   优化代码结构和方法命名
+
 -   v1.0.3
     -   重构 API：init 时直接打开串口，移除 open 方法
     -   新增 listen 方法用于设置数据接收监听
