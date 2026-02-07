@@ -152,9 +152,11 @@ public class SerialPortPlugin extends CordovaPlugin {
                     callbackContext.error("Serial port is not initialized. Please call init() first.");
                     return;
                 }
-                // 将 hex 字符串转换为字节数组发送
+                // 将 hex 字符串转换为字节数组，然后转换为字符串发送
+                // 这样发送的是原始字节数据，而不是hex字符串的UTF-8编码
                 byte[] bytes = hexToBytes(data);
-                serialPortManager.sendData(bytes);
+                String dataToSend = new String(bytes, "ISO-8859-1"); // 使用单字节编码，保持字节值不变
+                serialPortManager.sendData(dataToSend);
                 callbackContext.success("Data sent successfully");
             } catch (Exception e) {
                 callbackContext.error("Failed to send data: " + e.getMessage());
