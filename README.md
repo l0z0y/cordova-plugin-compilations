@@ -5,19 +5,22 @@
 ## 📦 插件列表
 
 ### 1. cordova-plugin-floating-window
+
 **版本:** 1.0.0  
 **平台:** Android  
 **描述:** 悬浮窗插件，支持后台服务、事件通知、跳转桌面和显示悬浮窗功能。
 
 **主要功能：**
-- ✅ 启动/停止后台服务
-- ✅ 显示/隐藏悬浮窗（支持图片显示）
-- ✅ 悬浮窗可拖拽移动
-- ✅ 跳转到桌面
-- ✅ 事件监听（显示、隐藏、点击等）
-- ✅ 权限检查和请求（使用 XXPermissions）
+
+-   ✅ 启动/停止后台服务
+-   ✅ 显示/隐藏悬浮窗（支持图片显示）
+-   ✅ 悬浮窗可拖拽移动
+-   ✅ 跳转到桌面
+-   ✅ 事件监听（显示、隐藏、点击等）
+-   ✅ 权限检查和请求（使用 XXPermissions）
 
 **安装：**
+
 ```bash
 cordova plugin add ./cordova-plugin-floating-window
 ```
@@ -27,16 +30,19 @@ cordova plugin add ./cordova-plugin-floating-window
 ---
 
 ### 2. cordova-plugin-serialport-y
-**版本:** 1.0.2  
+
+**版本:** 1.0.3  
 **平台:** Android  
 **描述:** 串口通信插件，基于 com.github.cl-6666:serialPort 库实现。
 
 **主要功能：**
-- ✅ 串口打开/关闭
-- ✅ 数据发送/接收
-- ✅ 串口配置（波特率、数据位、停止位等）
+
+-   ✅ 串口打开/关闭
+-   ✅ 数据发送/接收
+-   ✅ 串口配置（波特率、数据位、停止位等）
 
 **安装：**
+
 ```bash
 cordova plugin add ./cordova-plugin-serialport-y
 ```
@@ -46,17 +52,20 @@ cordova plugin add ./cordova-plugin-serialport-y
 ---
 
 ### 3. cordova-plugin-iflytek-aikit
+
 **版本:** 1.0.2  
 **平台:** Android  
 **描述:** 讯飞语音 AI 能力插件，支持语音唤醒、语音合成、命令词识别等功能。
 
 **主要功能：**
-- ✅ 语音唤醒（Wake Up）
-- ✅ 语音合成（TTS）
-- ✅ 命令词识别（ASR）
-- ✅ 音频播放管理
+
+-   ✅ 语音唤醒（Wake Up）
+-   ✅ 语音合成（TTS）
+-   ✅ 命令词识别（ASR）
+-   ✅ 音频播放管理
 
 **安装：**
+
 ```bash
 cordova plugin add ./cordova-plugin-iflytek-aikit
 ```
@@ -66,16 +75,19 @@ cordova plugin add ./cordova-plugin-iflytek-aikit
 ---
 
 ### 4. cordova-plugin-y-utils
+
 **版本:** 1.0.3  
 **平台:** Android  
 **描述:** 工具类插件，提供文件操作、命令执行等功能。
 
 **主要功能：**
-- ✅ 文件写入（支持 GBK 编码）
-- ✅ 命令执行
-- ✅ 工具方法
+
+-   ✅ 文件写入（支持 GBK 编码）
+-   ✅ 命令执行
+-   ✅ 工具方法
 
 **安装：**
+
 ```bash
 cordova plugin add ./cordova-plugin-y-utils
 ```
@@ -83,17 +95,20 @@ cordova plugin add ./cordova-plugin-y-utils
 ---
 
 ### 5. cordova-plugin-esptouch
+
 **版本:** 2.0.0  
 **平台:** Android, iOS  
 **描述:** ESP8266/ESP32 设备配网插件，支持 ESPTouch v1 和 v2 协议。
 
 **主要功能：**
-- ✅ ESPTouch v1 协议支持
-- ✅ ESPTouch v2 协议支持
-- ✅ WiFi 配置
-- ✅ 设备发现
+
+-   ✅ ESPTouch v1 协议支持
+-   ✅ ESPTouch v2 协议支持
+-   ✅ WiFi 配置
+-   ✅ 设备发现
 
 **安装：**
+
 ```bash
 cordova plugin add ./cordova-plugin-esptouch
 ```
@@ -127,31 +142,33 @@ cordova plugin add /path/to/plugins/cordova-plugin-esptouch
 
 ## 📋 系统要求
 
-- **Cordova:** >= 9.0.0
-- **cordova-android:** >= 9.0.0
-- **Node.js:** >= 12.0.0
-- **Android SDK:** API Level 21+
+-   **Cordova:** >= 9.0.0
+-   **cordova-android:** >= 9.0.0
+-   **Node.js:** >= 12.0.0
+-   **Android SDK:** API Level 21+
 
 ## 🔧 开发环境
 
 ### Android 开发环境
-- Android Studio
-- Android SDK
-- Gradle
+
+-   Android Studio
+-   Android SDK
+-   Gradle
 
 ### iOS 开发环境（仅限 esptouch 插件）
-- Xcode
-- CocoaPods
+
+-   Xcode
+-   CocoaPods
 
 ## 📝 许可证
 
 各个插件使用不同的许可证，请查看各插件的 README.md 或 LICENSE 文件。
 
-- `cordova-plugin-floating-window`: Apache-2.0
-- `cordova-plugin-serialport-y`: ISC
-- `cordova-plugin-iflytek-aikit`: MIT
-- `cordova-plugin-y-utils`: ISC
-- `cordova-plugin-esptouch`: MIT
+-   `cordova-plugin-floating-window`: Apache-2.0
+-   `cordova-plugin-serialport-y`: ISC
+-   `cordova-plugin-iflytek-aikit`: MIT
+-   `cordova-plugin-y-utils`: ISC
+-   `cordova-plugin-esptouch`: MIT
 
 ## 🤝 贡献
 
@@ -163,8 +180,8 @@ cordova plugin add /path/to/plugins/cordova-plugin-esptouch
 
 ## 📚 相关资源
 
-- [Cordova 官方文档](https://cordova.apache.org/docs/en/latest/)
-- [Cordova Android 平台文档](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
+-   [Cordova 官方文档](https://cordova.apache.org/docs/en/latest/)
+-   [Cordova Android 平台文档](https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html)
 
 ---
 
