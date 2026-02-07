@@ -15,28 +15,19 @@ public class SerialPortPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         if (action.equals("init")) {
-            int intervalSleep = args.optInt(0, 50);
-            boolean enableLog = args.optBoolean(1, false);
-            String logTag = args.optString(2, "SerialPort");
-            int databits = args.optInt(3, 8);
-            int parity = args.optInt(4, 0);
-            int stopbits = args.optInt(5, 1);
-            int strategy = args.optInt(6, 0);
-
-             new SimpleSerialPortManager.QuickConfig()
-                .setIntervalSleep(intervalSleep)
-                .setEnableLog(enableLog)
-                .setLogTag(logTag)
-                .setDatabits(databits)
-                .setParity(parity)
-                .setStopbits(stopbits)
-                .setStickyPacketStrategy(SimpleSerialPortManager.StickyPacketStrategy.values()[strategy]).apply(cordova.getActivity().getApplication());
-
-            callbackContext.success("Serial port config initialized");
-        } else if (action.equals("open")) {
             String port = args.getString(0);
             int baudRate = args.getInt(1);
-            this.openSerialPort(port, baudRate, callbackContext);
+            int intervalSleep = args.optInt(2, 50);
+            boolean enableLog = args.optBoolean(3, false);
+            String logTag = args.optString(4, "SerialPort");
+            int databits = args.optInt(5, 8);
+            int parity = args.optInt(6, 0);
+            int stopbits = args.optInt(7, 1);
+            int strategy = args.optInt(8, 0);
+            this.initAndOpenSerialPort(port, baudRate, intervalSleep, enableLog, logTag, databits, parity, stopbits, strategy, callbackContext);
+            return true;
+        } else if (action.equals("listen")) {
+            this.setDataListener(callbackContext);
             return true;
         } else if (action.equals("send")) {
             String data = args.getString(0);
@@ -49,11 +40,26 @@ public class SerialPortPlugin extends CordovaPlugin {
         return false;
     }
 
-    private void openSerialPort(String port, int baudRate, CallbackContext callbackContext) {
+    private void initAndOpenSerialPort(String port, int baudRate, int intervalSleep, boolean enableLog, 
+                                       String logTag, int databits, int parity, int stopbits, int strategy,
+                                       CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
+                // 配置串口参数
+                new SimpleSerialPortManager.QuickConfig()
+                    .setIntervalSleep(intervalSleep)
+                    .setEnableLog(enableLog)
+                    .setLogTag(logTag)
+                    .setDatabits(databits)
+                    .setParity(parity)
+                    .setStopbits(stopbits)
+                    .setStickyPacketStrategy(SimpleSerialPortManager.StickyPacketStrategy.values()[strategy])
+                    .apply(cordova.getActivity().getApplication());
+
+                // 打开串口
                 serialPortManager = SimpleSerialPortManager.getInstance();
                 serialPortManager.openSerialPort(port, baudRate, data -> {
+                    // 数据接收回调，如果有监听器则推送数据
                     CallbackContext currentCallback = readCallback;
                     if (currentCallback != null) {
                         String hex = bytesToHex(data);
@@ -62,16 +68,21 @@ public class SerialPortPlugin extends CordovaPlugin {
                         currentCallback.sendPluginResult(dataResult);
                     }
                 });
-                // 保存回调用于后续持续推送数据
-                this.readCallback = callbackContext;
-                // 返回成功并保持回调，以便后续持续推送数据
-                PluginResult successResult = new PluginResult(PluginResult.Status.OK, "Serial port opened successfully");
-                successResult.setKeepCallback(true);
-                callbackContext.sendPluginResult(successResult);
+                
+                callbackContext.success("Serial port initialized and opened successfully");
             } catch (Exception e) {
                 callbackContext.error(e.getMessage());
             }
         });
+    }
+
+    private void setDataListener(CallbackContext callbackContext) {
+        // 设置数据接收监听回调
+        this.readCallback = callbackContext;
+        // 返回成功并保持回调，以便后续持续推送数据
+        PluginResult successResult = new PluginResult(PluginResult.Status.OK, "Data listener set");
+        successResult.setKeepCallback(true);
+        callbackContext.sendPluginResult(successResult);
     }
  
     // 将字节数组转换为大写十六进制字符串（无空格），例如: 0x0A -> "0A"

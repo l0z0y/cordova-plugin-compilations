@@ -24,35 +24,35 @@ cordova plugin add https://github.com/l0z0y/cordova-plugin-compilations.git
 ## 快速开始
 
 ```javascript
-// 可选：初始化配置
+// 初始化并打开串口（配置参数可选）
 SerialPort.init(
+    "/dev/ttyS4",  // 串口路径
+    115200,        // 波特率
     {
-        intervalSleep: 50, // 轮询间隔(ms)
-        enableLog: false, // 是否开启底层日志
+        intervalSleep: 50, // 轮询间隔(ms)，默认 50
+        enableLog: false,  // 是否开启底层日志，默认 false
         logTag: "SerialPort",
-        databits: 8, // 数据位：5/6/7/8
-        parity: 0, // 校验位：0-None 1-Odd 2-Even 3-Mark 4-Space（随底层库）
-        stopbits: 1, // 停止位：1/2（随底层库）
-        strategy: 0, // 黏包处理策略索引（随底层库）
+        databits: 8,       // 数据位：5/6/7/8，默认 8
+        parity: 0,         // 校验位：0-None 1-Odd 2-Even 3-Mark 4-Space，默认 0
+        stopbits: 1,       // 停止位：1/2，默认 1
+        strategy: 0,       // 黏包处理策略索引，默认 0
     },
     function () {
-        console.log("Serial init ok")
+        console.log("Serial port initialized and opened")
+        
+        // 设置数据接收监听器
+        SerialPort.listen(
+            function (hex) {
+                // 每当串口收到数据都会回调一次，例如："0A1B2C"
+                console.log("RX:", hex)
+            },
+            function (err) {
+                console.error("Listen error", err)
+            }
+        )
     },
     function (err) {
-        console.error("Serial init error", err)
-    }
-)
-
-// 打开串口，并持续接收数据（十六进制字符串）
-SerialPort.open(
-    "/dev/ttyS4",
-    115200,
-    function (hex) {
-        // 每当串口收到数据都会回调一次，例如："0A1B2C"
-        console.log("RX:", hex)
-    },
-    function (err) {
-        console.error("Open error", err)
+        console.error("Init error", err)
     }
 )
 
@@ -81,16 +81,19 @@ SerialPort.close(
 你也可以通过 `cordova.plugins.serialPort` 使用相同 API：
 
 ```javascript
-cordova.plugins.serialPort.open("/dev/ttyS4", 115200, onData, onError)
+cordova.plugins.serialPort.init("/dev/ttyS4", 115200, {}, onInitSuccess, onError)
+cordova.plugins.serialPort.listen(onData, onError)
 ```
 
 ## API 说明
 
 所有方法都遵循 Cordova `exec(success, error, ...)` 的风格。
 
--   `SerialPort.init(options, success, error)`
+-   `SerialPort.init(port, baudRate, options, success, error)`
 
-    -   options（可选）：
+    -   `port` string：串口路径，例如 `/dev/ttyS4`
+    -   `baudRate` number：波特率，例如 `115200`
+    -   `options` object（可选）：配置参数
         -   `intervalSleep` number 默认 50
         -   `enableLog` boolean 默认 false
         -   `logTag` string 默认 "SerialPort"
@@ -98,22 +101,25 @@ cordova.plugins.serialPort.open("/dev/ttyS4", 115200, onData, onError)
         -   `parity` number 默认 0
         -   `stopbits` number 默认 1
         -   `strategy` number 默认 0（对应底层 SimpleSerialPortManager 的策略枚举索引）
-    -   success：初始化成功回调
-    -   error：失败回调
+    -   `success`：初始化并打开串口成功回调
+    -   `error`：失败回调
 
--   `SerialPort.open(port, baudRate, success, error)`
+-   `SerialPort.listen(success, error)`
 
-    -   `port` string 例如 `/dev/ttyS4`
-    -   `baudRate` number 例如 `115200`
-    -   `success(hex: string)`：持续回调接收的数据（大写十六进制、无空格，例如 "0A1B2C"）。
+    -   `success(hex: string)`：数据接收回调函数，每当串口收到数据都会调用一次，参数为大写十六进制字符串（无空格，例如 "0A1B2C"）
     -   `error(err)`：出错回调
+    -   注意：此方法会保持回调连接，持续接收数据
 
 -   `SerialPort.send(data, success, error)`
 
-    -   `data` string：要发送的数据（按你的设备协议拼接，如命令、换行等）。
+    -   `data` string：要发送的数据（按你的设备协议拼接，如命令、换行等）
+    -   `success`：发送成功回调
+    -   `error`：发送失败回调
 
 -   `SerialPort.close(success, error)`
-    -   关闭串口并停止后续回调。
+    -   关闭串口并停止后续数据回调
+    -   `success`：关闭成功回调
+    -   `error`：关闭失败回调
 
 ## 数据格式
 
@@ -159,6 +165,8 @@ cordova.plugins.serialPort.open("/dev/ttyS4", 115200, onData, onError)
 ## 版本变更
 
 -   v1.0.3
+    -   重构 API：init 时直接打开串口，移除 open 方法
+    -   新增 listen 方法用于设置数据接收监听
     -   统一作者信息
     -   更新仓库地址
 
