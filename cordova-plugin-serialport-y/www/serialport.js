@@ -38,7 +38,7 @@ module.exports = {
     },
     /**
      * 发送数据
-     * @param {String} data - 要发送的数据
+     * @param {String} data - 要发送的数据，支持十六进制字符串格式（例如 "0A1B2C"），会自动转换为字节数组发送
      * @param {Function} success - 成功回调
      * @param {Function} error - 错误回调
      */

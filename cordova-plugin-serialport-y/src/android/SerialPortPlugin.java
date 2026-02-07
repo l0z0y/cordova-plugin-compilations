@@ -126,6 +126,25 @@ public class SerialPortPlugin extends CordovaPlugin {
         return new String(hexChars);
     }
 
+    // 将十六进制字符串转换为字节数组，例如: "0A1B2C" -> [0x0A, 0x1B, 0x2C]
+    private byte[] hexToBytes(String hex) {
+        if (hex == null || hex.length() == 0) {
+            return new byte[0];
+        }
+        // 移除空格和常见分隔符
+        hex = hex.replaceAll("\\s+", "").replaceAll("[-:]", "");
+        // 确保长度为偶数
+        if (hex.length() % 2 != 0) {
+            hex = "0" + hex;
+        }
+        byte[] bytes = new byte[hex.length() / 2];
+        for (int i = 0; i < hex.length(); i += 2) {
+            bytes[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                    + Character.digit(hex.charAt(i + 1), 16));
+        }
+        return bytes;
+    }
+
     private void sendData(String data, CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
@@ -133,10 +152,12 @@ public class SerialPortPlugin extends CordovaPlugin {
                     callbackContext.error("Serial port is not initialized. Please call init() first.");
                     return;
                 }
-                serialPortManager.sendData(data);
+                // 将 hex 字符串转换为字节数组发送
+                byte[] bytes = hexToBytes(data);
+                serialPortManager.sendData(bytes);
                 callbackContext.success("Data sent successfully");
             } catch (Exception e) {
-                callbackContext.error(e.getMessage());
+                callbackContext.error("Failed to send data: " + e.getMessage());
             }
         });
     }

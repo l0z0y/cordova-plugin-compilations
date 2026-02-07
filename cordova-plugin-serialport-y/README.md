@@ -56,9 +56,9 @@ SerialPort.init(
     }
 )
 
-// 发送数据（按你的设备协议准备字符串）
+// 发送数据（十六进制字符串格式，例如 "0A1B2C"）
 SerialPort.send(
-    "AT+CMD\r\n",
+    "0A1B2C",  // 发送字节 0x0A, 0x1B, 0x2C
     function () {
         console.log("TX ok")
     },
@@ -112,7 +112,7 @@ cordova.plugins.serialPort.listen(onData, onError)
 
 -   `SerialPort.send(data, success, error)`
 
-    -   `data` string：要发送的数据（按你的设备协议拼接，如命令、换行等）
+    -   `data` string：要发送的数据，支持十六进制字符串格式（例如 "0A1B2C"），会自动转换为字节数组发送
     -   `success`：发送成功回调
     -   `error`：发送失败回调
 
