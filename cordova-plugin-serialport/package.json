@@ -1,0 +1,20 @@
+{
+  "name": "cordova-plugin-serialport-y",
+  "version": "1.0.2",
+  "description": "Cordova plugin for serial port communication using com.github.cl-6666:serialPort library",
+  "cordova": {
+    "id": "cordova-plugin-serialport-y",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "serial",
+    "port",
+    "communication"
+  ],
+  "author": "lzy",
+  "license": "ISC"
+}

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-floating-window" version="1.0.0"
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <name>FloatingWindow</name>
+    <description>Cordova plugin for floating window, background service, and home screen navigation</description>
+    
+    <js-module name="FloatingWindow" src="www/FloatingWindow.js">
+        <clobbers target="window.FloatingWindow" />
+    </js-module>
+    
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="FloatingWindow">
+                <param name="android-package" value="com.cordova.floatingwindow.FloatingWindowPlugin" />
+            </feature>
+        </config-file>
+        
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+            <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.INTERNET" />
+            
+            <service 
+                android:name="com.cordova.floatingwindow.FloatingWindowService"
+                android:enabled="true"
+                android:exported="false"
+                android:foregroundServiceType="mediaPlayback" />
+        </config-file>
+        
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+        
+        <source-file src="src/android/FloatingWindowPlugin.java" target-dir="src/com/cordova/floatingwindow" />
+        <source-file src="src/android/FloatingWindowService.java" target-dir="src/com/cordova/floatingwindow" />
+        <source-file src="src/android/FloatingWindowView.java" target-dir="src/com/cordova/floatingwindow" />
+        <source-file src="src/android/FloatingWindowTouchListener.java" target-dir="src/com/cordova/floatingwindow" />
+    </platform>
+</plugin>

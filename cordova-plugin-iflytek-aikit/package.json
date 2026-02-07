@@ -1,0 +1,42 @@
+{
+  "name": "cordova-plugin-iflytek-aikit",
+  "version": "1.0.2",
+  "description": "讯飞语音AI能力插件，支持语音唤醒、语音合成、命令词识别等功能",
+  "main": "www/iflytek-aikit.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "cordova",
+    "ionic",
+    "iflytek",
+    "voice",
+    "wakeup",
+    "tts",
+    "asr",
+    "语音",
+    "唤醒",
+    "合成",
+    "识别"
+  ],
+  "author": "l0z0y",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/l0z0y/cordova-plugin-iflytek-aikit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/l0z0y/cordova-plugin-iflytek-aikit/issues"
+  },
+  "homepage": "https://github.com/l0z0y/cordova-plugin-iflytek-aikit#readme",
+  "cordova": {
+    "id": "cordova-plugin-iflytek-aikit",
+    "platforms": [
+      "android"
+    ]
+  },
+  "engines": {
+    "cordova": ">=9.0.0",
+    "cordova-android": ">=9.0.0"
+  }
+}

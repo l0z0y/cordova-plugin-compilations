@@ -1,0 +1,17 @@
+{
+  "name": "cordova-plugin-y-utils",
+  "version": "1.0.3",
+  "description": "",
+  "cordova": {
+    "id": "cordova-plugin-y-utils",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "lzy",
+  "license": "ISC"
+}

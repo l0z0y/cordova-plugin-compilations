@@ -1,0 +1,20 @@
+// 讯飞AIKit插件Gradle配置
+// 用于将AAR文件添加到Android项目依赖中
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    // 使用阿里云镜像和JitPack仓库
+    maven { url "https://maven.aliyun.com/repository/public" }
+    maven { url "https://maven.aliyun.com/repository/google" }
+    maven { url 'https://jitpack.io' }
+    mavenCentral()
+}
+
+dependencies {
+    implementation(name: 'AIKit', ext: 'aar')
+    // 权限请求库（与原生代码保持一致）
+    implementation 'com.hjq:xxpermissions:8.2'
+}
+

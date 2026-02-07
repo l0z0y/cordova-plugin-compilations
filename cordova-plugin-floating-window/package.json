@@ -1,0 +1,22 @@
+{
+  "name": "cordova-plugin-floating-window",
+  "version": "1.0.0",
+  "description": "Cordova plugin for floating window, background service, and home screen navigation",
+  "cordova": {
+    "id": "cordova-plugin-floating-window",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "floating",
+    "window",
+    "background",
+    "service",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "",
+  "license": "Apache-2.0"
+}

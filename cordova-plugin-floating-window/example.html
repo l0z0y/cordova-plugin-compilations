@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Floating Window Plugin Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .button-group {
+            margin: 20px 0;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.stop {
+            background-color: #f44336;
+        }
+        button.stop:hover {
+            background-color: #da190b;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+        }
+        .log {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>悬浮窗插件示例</h1>
+        
+        <div class="status" id="status">等待设备就绪...</div>
+        
+        <div class="button-group">
+            <button onclick="checkPermission()">检查权限</button>
+            <button onclick="requestPermission()">请求权限</button>
+        </div>
+        
+        <div class="button-group">
+            <label>图片路径:</label>
+            <input type="text" id="imagePath" value="/android_asset/www/img/icon.png" placeholder="输入图片路径或URL">
+            
+            <label>宽度 (像素):</label>
+            <input type="number" id="width" value="150" min="50" max="500">
+            
+            <label>高度 (像素):</label>
+            <input type="number" id="height" value="150" min="50" max="500">
+            
+            <button onclick="showFloatingWindow()">显示悬浮窗</button>
+            <button onclick="hideFloatingWindow()">隐藏悬浮窗</button>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="startService()">启动后台服务</button>
+            <button class="stop" onclick="stopService()">停止后台服务</button>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="goToHome()">跳转到桌面</button>
+        </div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        var logElement = document.getElementById('log');
+        var statusElement = document.getElementById('status');
+
+        function log(message) {
+            var time = new Date().toLocaleTimeString();
+            logElement.innerHTML += '[' + time + '] ' + message + '<br>';
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(message) {
+            statusElement.textContent = message;
+        }
+
+        document.addEventListener('deviceready', function() {
+            updateStatus('设备已就绪');
+            log('设备已就绪');
+            
+            // 设置事件监听器
+            if (window.FloatingWindow) {
+                window.FloatingWindow.setEventListener(function(event) {
+                    log('事件: ' + event.type + ' - ' + JSON.stringify(event.data));
+                });
+                log('事件监听器已设置');
+            } else {
+                log('错误: FloatingWindow 插件未找到');
+            }
+        }, false);
+
+        function checkPermission() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            window.FloatingWindow.checkPermission(function(hasPermission) {
+                if (hasPermission === 1) {
+                    log('✓ 已有悬浮窗权限');
+                    updateStatus('已有悬浮窗权限');
+                } else {
+                    log('✗ 没有悬浮窗权限');
+                    updateStatus('没有悬浮窗权限，请点击"请求权限"');
+                }
+            }, function(error) {
+                log('检查权限失败: ' + error);
+            });
+        }
+
+        function requestPermission() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            window.FloatingWindow.requestPermission(function() {
+                log('✓ 权限已授予');
+                updateStatus('权限已授予');
+            }, function(error) {
+                if (error === 'Permission denied permanently') {
+                    log('✗ 权限被永久拒绝，请前往系统设置手动开启');
+                    updateStatus('权限被永久拒绝，请前往系统设置');
+                } else {
+                    log('✗ 权限请求失败: ' + error);
+                    updateStatus('权限请求失败');
+                }
+            });
+        }
+
+        function showFloatingWindow() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            var imagePath = document.getElementById('imagePath').value;
+            var width = parseInt(document.getElementById('width').value) || 150;
+            var height = parseInt(document.getElementById('height').value) || 150;
+            
+            log('显示悬浮窗: ' + imagePath + ' (' + width + 'x' + height + ')');
+            
+            window.FloatingWindow.showFloatingWindow(imagePath, width, height, function() {
+                log('✓ 悬浮窗已显示');
+                updateStatus('悬浮窗已显示');
+            }, function(error) {
+                log('✗ 显示悬浮窗失败: ' + error);
+                updateStatus('显示失败: ' + error);
+            });
+        }
+
+        function hideFloatingWindow() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            window.FloatingWindow.hideFloatingWindow(function() {
+                log('✓ 悬浮窗已隐藏');
+                updateStatus('悬浮窗已隐藏');
+            }, function(error) {
+                log('✗ 隐藏悬浮窗失败: ' + error);
+            });
+        }
+
+        function startService() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            window.FloatingWindow.startService(function() {
+                log('✓ 后台服务已启动');
+                updateStatus('后台服务运行中');
+            }, function(error) {
+                log('✗ 启动服务失败: ' + error);
+            });
+        }
+
+        function stopService() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            window.FloatingWindow.stopService(function() {
+                log('✓ 后台服务已停止');
+                updateStatus('后台服务已停止');
+            }, function(error) {
+                log('✗ 停止服务失败: ' + error);
+            });
+        }
+
+        function goToHome() {
+            if (!window.FloatingWindow) {
+                log('错误: 插件未加载');
+                return;
+            }
+            
+            window.FloatingWindow.goToHome(function() {
+                log('✓ 已跳转到桌面');
+            }, function(error) {
+                log('✗ 跳转失败: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>

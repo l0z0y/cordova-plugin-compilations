@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="cordova-plugin-serialport"
+    version="1.0.2">
+    <name>SerialPort</name>
+    <description>
+    </description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,serial,port</keywords>
+    <repo>https://github.com/your-repo/cordova-plugin-serialport</repo>
+    <issue>https://github.com/your-repo/cordova-plugin-serialport/issues</issue>
+
+    <engines>
+        <engine name="cordova" version=">=9.0.0" />
+    </engines>
+
+    <!-- 暴露 JS 模块并指定全局命名，便于调用：window.SerialPort 与 cordova.plugins.serialPort -->
+    <js-module src="www/serialport.js" name="SerialPort">
+        <clobbers target="SerialPort" />
+        <clobbers target="cordova.plugins.serialPort" />
+    </js-module>
+
+    <platform name="android">
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        </config-file>
+
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="SerialPort">
+                <param name="android-package" value="com.yy.serialport.SerialPortPlugin" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/SerialPortPlugin.java"
+            target-dir="src/com/yy/serialport" />
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+    </platform>
+</plugin>

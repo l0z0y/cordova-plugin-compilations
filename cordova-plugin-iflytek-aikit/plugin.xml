@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-iflytek-aikit" version="1.0.2"
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>iFlytek AIKit Plugin</name>
+    <description>讯飞语音AI能力插件，支持语音唤醒、语音合成、命令词识别等功能</description>
+    <license>MIT</license>
+    <keywords>cordova,ionic,iflytek,voice,wakeup,tts,asr</keywords>
+    <js-module src="www/iflytek-aikit.js" name="IflytekAIKit">
+        <clobbers target="IflytekAIKit" />
+    </js-module>
+
+    <!-- Android平台配置 -->
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <!-- 权限配置 -->
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-permission android:name="android.permission.INTERNET" />
+        </config-file>
+
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="IflytekAIKit">
+                <param name="android-package" value="com.iflytek.aikit.plugin.IflytekAIKitPlugin" />
+            </feature>
+        </config-file>
+
+        <!-- 源文件 -->
+        <source-file src="src/android/IflytekAIKitPlugin.java"
+            target-dir="src/com/iflytek/aikit/plugin" />
+        <source-file src="src/android/IflytekAIKit.java" target-dir="src/com/iflytek/aikit/plugin" />
+        <source-file src="src/android/AudioTrackManager.java"
+            target-dir="src/com/iflytek/aikit/plugin" />
+        <source-file src="src/android/TTSManager.java" target-dir="src/com/iflytek/aikit/plugin" />
+        <source-file src="src/android/WakeUpManager.java" target-dir="src/com/iflytek/aikit/plugin" />
+        <source-file src="src/android/CommandRecognitionManager.java"
+            target-dir="src/com/iflytek/aikit/plugin" />
+
+        <!-- AAR库文件 -->
+        <lib-file src="libs/AIKit.aar" />
+
+        <!-- 资源文件：使用resource-file复制整个目录到assets -->
+        <!-- 注意：resource-file支持递归复制目录，会将assets/iflytek下的所有文件复制到Android项目的assets/iflytek目录 -->
+        <resource-file src="assets/iflytek" target="assets/iflytek" />
+
+        <!-- Gradle配置 -->
+        <framework src="src/android/iflytek-aikit.gradle" custom="true" type="gradleReference" />
+    </platform>
+</plugin>

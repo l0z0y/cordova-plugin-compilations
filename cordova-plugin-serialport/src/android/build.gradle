@@ -1,0 +1,7 @@
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.cl-6666:serialPort:v5.0.7'
+}
