@@ -153,9 +153,9 @@ public class SerialPortPlugin extends CordovaPlugin {
                     return;
                 }
                 // 将 hex 字符串转换为字节数组，然后转换为字符串发送
-                // 这样发送的是原始字节数据，而不是hex字符串的UTF-8编码
+                // 使用 ISO-8859-1 编码将字节数组转换为字符串，保持字节值不变
                 byte[] bytes = hexToBytes(data);
-                String dataToSend = new String(bytes, "ISO-8859-1"); // 使用单字节编码，保持字节值不变
+                String dataToSend = new String(bytes, java.nio.charset.StandardCharsets.ISO_8859_1);
                 serialPortManager.sendData(dataToSend);
                 callbackContext.success("Data sent successfully");
             } catch (Exception e) {
