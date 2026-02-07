@@ -25,7 +25,7 @@ public class SerialPortPlugin extends CordovaPlugin {
             int parity = args.optInt(6, 0);
             int stopbits = args.optInt(7, 1);
             int strategy = args.optInt(8, 0);
-            this.initAndOpenSerialPort(port, baudRate, intervalSleep, enableLog, logTag, databits, parity, stopbits, strategy, callbackContext);
+            this.initSerialPort(port, baudRate, intervalSleep, enableLog, logTag, databits, parity, stopbits, strategy, callbackContext);
             return true;
         } else if (action.equals("listen")) {
             this.setDataListener(callbackContext);
@@ -41,9 +41,9 @@ public class SerialPortPlugin extends CordovaPlugin {
         return false;
     }
 
-    private void initAndOpenSerialPort(String port, int baudRate, int intervalSleep, boolean enableLog, 
-                                       String logTag, int databits, int parity, int stopbits, int strategy,
-                                       CallbackContext callbackContext) {
+    private void initSerialPort(String port, int baudRate, int intervalSleep, boolean enableLog, 
+                                String logTag, int databits, int parity, int stopbits, int strategy,
+                                CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
                 // 如果已经初始化，先关闭之前的串口
