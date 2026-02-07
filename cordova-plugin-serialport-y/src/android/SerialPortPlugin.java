@@ -64,10 +64,10 @@ public class SerialPortPlugin extends CordovaPlugin {
                 });
                 // 保存回调用于后续持续推送数据
                 this.readCallback = callbackContext;
-                // 初始返回一个占位结果并保持回调
-                PluginResult initResult = new PluginResult(PluginResult.Status.NO_RESULT);
-                initResult.setKeepCallback(true);
-                callbackContext.sendPluginResult(initResult);
+                // 返回成功并保持回调，以便后续持续推送数据
+                PluginResult successResult = new PluginResult(PluginResult.Status.OK, "Serial port opened successfully");
+                successResult.setKeepCallback(true);
+                callbackContext.sendPluginResult(successResult);
             } catch (Exception e) {
                 callbackContext.error(e.getMessage());
             }
