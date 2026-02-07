@@ -58,19 +58,25 @@ public class SerialPortPlugin extends CordovaPlugin {
                 }
 
                 // 配置串口参数
-                new SimpleSerialPortManager.QuickConfig()
-                    .setIntervalSleep(intervalSleep)
-                    .setEnableLog(enableLog)
-                    .setLogTag(logTag)
-                    .setDatabits(databits)
-                    .setParity(parity)
-                    .setStopbits(stopbits)
-                    .setStickyPacketStrategy(SimpleSerialPortManager.StickyPacketStrategy.values()[strategy])
-                    .apply(cordova.getActivity().getApplication());
+                try {
+                    new SimpleSerialPortManager.QuickConfig()
+                        .setIntervalSleep(intervalSleep)
+                        .setEnableLog(enableLog)
+                        .setLogTag(logTag)
+                        .setDatabits(databits)
+                        .setParity(parity)
+                        .setStopbits(stopbits)
+                        .setStickyPacketStrategy(SimpleSerialPortManager.StickyPacketStrategy.values()[strategy])
+                        .apply(cordova.getActivity().getApplication());
+                } catch (Exception configException) {
+                    isInitialized = false;
+                    callbackContext.error("Failed to configure serial port: " + configException.getMessage());
+                    return;
+                }
 
                 // 打开串口
                 serialPortManager = SimpleSerialPortManager.getInstance();
-                serialPortManager.openSerialPort(port, baudRate, data -> {
+                boolean openResult = serialPortManager.openSerialPort(port, baudRate, data -> {
                     // 数据接收回调，如果有监听器则推送数据
                     CallbackContext currentCallback = readCallback;
                     if (currentCallback != null) {
@@ -81,8 +87,14 @@ public class SerialPortPlugin extends CordovaPlugin {
                     }
                 });
                 
-                isInitialized = true;
-                callbackContext.success("Serial port initialized and opened successfully");
+                if (openResult) {
+                    isInitialized = true;
+                    callbackContext.success("Serial port initialized and opened successfully");
+                } else {
+                    isInitialized = false;
+                    serialPortManager = null;
+                    callbackContext.error("Failed to open serial port: " + port + " at " + baudRate);
+                }
             } catch (Exception e) {
                 isInitialized = false;
                 callbackContext.error(e.getMessage());
