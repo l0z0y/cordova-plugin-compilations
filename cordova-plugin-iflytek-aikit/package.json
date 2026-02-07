@@ -23,12 +23,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/l0z0y/cordova-plugin-iflytek-aikit.git"
+    "url": "https://github.com/l0z0y/cordova-plugin-compilations.git"
   },
   "bugs": {
-    "url": "https://github.com/l0z0y/cordova-plugin-iflytek-aikit/issues"
+    "url": "https://github.com/l0z0y/cordova-plugin-compilations/issues"
   },
-  "homepage": "https://github.com/l0z0y/cordova-plugin-iflytek-aikit#readme",
+  "homepage": "https://github.com/l0z0y/cordova-plugin-compilations#readme",
   "cordova": {
     "id": "cordova-plugin-iflytek-aikit",
     "platforms": [

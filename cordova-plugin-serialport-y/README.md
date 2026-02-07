@@ -18,7 +18,7 @@ cordova plugin add cordova-plugin-serialport-y
 或从你的 Git 仓库安装：
 
 ```bash
-cordova plugin add https://github.com/l0z0y/cordova-plugin-serial-port-yy.git
+cordova plugin add https://github.com/l0z0y/cordova-plugin-compilations.git
 ```
 
 ## 快速开始
