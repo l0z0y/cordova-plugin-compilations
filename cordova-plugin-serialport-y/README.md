@@ -158,6 +158,10 @@ cordova.plugins.serialPort.open("/dev/ttyS4", 115200, onData, onError)
 
 ## 版本变更
 
+-   v1.0.3
+    -   统一作者信息
+    -   更新仓库地址
+
 -   v1.0.0
     -   首次发布：持续监听、十六进制回调、JS 全局导出与 init 可配置。
 
