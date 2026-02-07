@@ -26,7 +26,7 @@ cordova plugin add ./cordova-plugin-floating-window
 
 ---
 
-### 2. cordova-plugin-serialport
+### 2. cordova-plugin-serialport-y
 **版本:** 1.0.2  
 **平台:** Android  
 **描述:** 串口通信插件，基于 com.github.cl-6666:serialPort 库实现。
@@ -38,10 +38,10 @@ cordova plugin add ./cordova-plugin-floating-window
 
 **安装：**
 ```bash
-cordova plugin add ./cordova-plugin-serialport
+cordova plugin add ./cordova-plugin-serialport-y
 ```
 
-**文档：** [cordova-plugin-serialport/README.md](./cordova-plugin-serialport/README.md)
+**文档：** [cordova-plugin-serialport-y/README.md](./cordova-plugin-serialport-y/README.md)
 
 ---
 
@@ -119,7 +119,7 @@ cordova plugin add /path/to/plugin/cordova-plugin-floating-window
 ```bash
 # 在 Cordova 项目中逐个安装
 cordova plugin add /path/to/plugins/cordova-plugin-floating-window
-cordova plugin add /path/to/plugins/cordova-plugin-serialport
+cordova plugin add /path/to/plugins/cordova-plugin-serialport-y
 cordova plugin add /path/to/plugins/cordova-plugin-iflytek-aikit
 cordova plugin add /path/to/plugins/cordova-plugin-y-utils
 cordova plugin add /path/to/plugins/cordova-plugin-esptouch
