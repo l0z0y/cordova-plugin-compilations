@@ -20,9 +20,9 @@ import android.net.Uri;
 import android.util.Log;
 import android.Manifest;
 
+import android.app.Activity;
+import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.XXPermissions;
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.OnPermissionCallback;
 import java.util.List;
 
 /**
@@ -141,9 +141,9 @@ public class FloatingWindowPlugin extends CordovaPlugin {
      */
     private void showFloatingWindow(Context context, String imagePath, int width, int height, CallbackContext callbackContext) {
         try {
-            // 使用 XXPermissions 检查权限
+            // 使用 Android 原生方法检查悬浮窗权限（SYSTEM_ALERT_WINDOW 是特殊权限）
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!XXPermissions.isGranted(cordova.getActivity(), Permission.SYSTEM_ALERT_WINDOW)) {
+                if (!Settings.canDrawOverlays(context)) {
                     callbackContext.error("Permission denied: SYSTEM_ALERT_WINDOW. Please request permission first.");
                     return;
                 }
@@ -212,8 +212,8 @@ public class FloatingWindowPlugin extends CordovaPlugin {
                 try {
                     boolean hasPermission = false;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        // 使用 XXPermissions 检查悬浮窗权限
-                        hasPermission = XXPermissions.isGranted(cordova.getActivity(), Permission.SYSTEM_ALERT_WINDOW);
+                        // 使用 Android 原生方法检查悬浮窗权限（SYSTEM_ALERT_WINDOW 是特殊权限）
+                        hasPermission = Settings.canDrawOverlays(context);
                     } else {
                         hasPermission = true;
                     }
@@ -235,7 +235,7 @@ public class FloatingWindowPlugin extends CordovaPlugin {
     }
 
     /**
-     * 请求悬浮窗权限（使用 XXPermissions）
+     * 请求悬浮窗权限（使用 XXPermissions，与其他插件保持一致）
      */
     private void requestPermission(CallbackContext callbackContext) {
         this.permissionCallbackContext = callbackContext;
@@ -247,10 +247,10 @@ public class FloatingWindowPlugin extends CordovaPlugin {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         // 使用 XXPermissions 请求悬浮窗权限
                         XXPermissions.with(cordova.getActivity())
-                            .permission(Permission.SYSTEM_ALERT_WINDOW)
-                            .request(new OnPermissionCallback() {
+                            .permission("android.permission.SYSTEM_ALERT_WINDOW")
+                            .request(new OnPermission() {
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void hasPermission(List<String> granted, boolean all) {
                                     Log.d(TAG, "Permission granted");
                                     if (permissionCallbackContext != null) {
                                         permissionCallbackContext.success("Permission granted");
@@ -259,11 +259,12 @@ public class FloatingWindowPlugin extends CordovaPlugin {
                                 }
 
                                 @Override
-                                public void onDenied(List<String> permissions, boolean never) {
-                                    Log.d(TAG, "Permission denied, never: " + never);
+                                public void noPermission(List<String> denied, boolean quick) {
+                                    Log.d(TAG, "Permission denied, quick: " + quick);
                                     if (permissionCallbackContext != null) {
-                                        if (never) {
-                                            // 用户选择了"不再询问"
+                                        if (quick) {
+                                            // 用户选择了"不再询问"，跳转到权限设置页面
+                                            XXPermissions.startPermissionActivity(cordova.getActivity(), denied);
                                             permissionCallbackContext.error("Permission denied permanently");
                                         } else {
                                             permissionCallbackContext.error("Permission denied");
@@ -275,6 +276,7 @@ public class FloatingWindowPlugin extends CordovaPlugin {
                     } else {
                         // Android 6.0 以下不需要权限
                         callbackContext.success("Permission not required for this Android version");
+                        permissionCallbackContext = null;
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to request permission", e);

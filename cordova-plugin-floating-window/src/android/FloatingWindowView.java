@@ -2,6 +2,7 @@ package com.cordova.floatingwindow;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.view.Gravity;
 import android.view.View;
@@ -17,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.content.res.AssetManager;
 
 /**
  * FloatingWindowView - 悬浮窗视图管理类
@@ -76,6 +78,9 @@ public class FloatingWindowView {
                         public void onClick(View v) {
                             // 发送点击事件
                             sendEvent("click", null);
+                            
+                            // 将应用带到前台
+                            bringAppToForeground();
                         }
                     });
 
@@ -129,7 +134,7 @@ public class FloatingWindowView {
                 try {
                     Bitmap bitmap = null;
                     
-                    // 判断是本地路径还是网络URL
+                    // 判断是网络URL还是本地路径
                     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
                         // 网络图片
                         URL url = new URL(imagePath);
@@ -140,28 +145,17 @@ public class FloatingWindowView {
                         bitmap = BitmapFactory.decodeStream(input);
                         input.close();
                     } else {
-                        // 本地图片
-                        String realPath = imagePath;
-                        if (imagePath.startsWith("file://")) {
-                            realPath = imagePath.replace("file://", "");
-                        }
-                        File file = new File(realPath);
-                        if (file.exists()) {
-                            bitmap = BitmapFactory.decodeFile(realPath);
-                        } else {
-                            // 尝试从assets或资源加载
-                            try {
-                                int resId = context.getResources().getIdentifier(
-                                    realPath.replace("/", "_").replace(".", "_"),
-                                    "drawable",
-                                    context.getPackageName()
-                                );
-                                if (resId != 0) {
-                                    bitmap = BitmapFactory.decodeResource(context.getResources(), resId);
-                                }
-                            } catch (Exception e) {
-                                Log.e(TAG, "Failed to load image from resources", e);
-                            }
+                        // 本地图片：直接添加 www/ 前缀，从 Android assets 加载
+                        // AssetManager.open() 的路径是相对于 assets 目录的，所以使用 www/ 前缀
+                        String assetPath = "www/" + imagePath;
+                        try {
+                            AssetManager assetManager = context.getAssets();
+                            InputStream inputStream = assetManager.open(assetPath);
+                            bitmap = BitmapFactory.decodeStream(inputStream);
+                            inputStream.close();
+                            Log.d(TAG, "Loaded image from assets: " + assetPath);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Failed to load image from assets: " + assetPath, e);
                         }
                     }
                     
@@ -208,6 +202,30 @@ public class FloatingWindowView {
             params.x = x;
             params.y = y;
             windowManager.updateViewLayout(floatingView, params);
+        }
+    }
+
+    /**
+     * 将应用带到前台
+     */
+    private void bringAppToForeground() {
+        try {
+            PackageManager pm = context.getPackageManager();
+            Intent launchIntent = pm.getLaunchIntentForPackage(context.getPackageName());
+            
+            if (launchIntent != null) {
+                // 清除之前的任务栈，确保应用回到前台
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                
+                context.startActivity(launchIntent);
+                Log.d(TAG, "App brought to foreground");
+            } else {
+                Log.e(TAG, "Failed to get launch intent for package: " + context.getPackageName());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to bring app to foreground", e);
         }
     }
 }

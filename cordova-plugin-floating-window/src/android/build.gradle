@@ -10,6 +10,6 @@ repositories {
 }
 
 dependencies {
-    // 权限请求库（与原生代码保持一致）
+    // 权限请求库（与其他插件保持一致）
     implementation 'com.hjq:xxpermissions:8.2'
 }
