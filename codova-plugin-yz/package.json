@@ -1,0 +1,19 @@
+{
+  "name": "cordova-plugin-yz",
+  "version": "1.0.1",
+  "description": "Cordova Android plugin for the YZ IoT vendor AAR.",
+  "author": "lzy",
+  "cordova": {
+    "id": "cordova-plugin-yz",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "iot",
+    "yz"
+  ],
+  "license": "ISC"
+}

@@ -1,0 +1,8 @@
+repositories {
+    // AAR 会被复制到 Cordova 工程的 app/src/main/libs 目录。
+    flatDir { dirs 'src/main/libs' }
+}
+
+dependencies {
+    implementation(name: 'yztiotdemo', ext: 'aar')
+}
