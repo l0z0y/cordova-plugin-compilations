@@ -50,17 +50,6 @@ public class SerialPortPlugin extends CordovaPlugin {
                                 CallbackContext callbackContext) {
         cordova.getThreadPool().execute(() -> {
             try {
-                // 如果已经初始化，先关闭之前的串口
-                if (isInitialized && serialPortManager != null) {
-                    try {
-                        serialPortManager.closeSerialPort();
-                    } catch (Exception e) {
-                        // 忽略关闭时的错误，继续重新初始化
-                    }
-                    serialPortManager = null;
-                    readCallback = null;
-                }
-
                 // 配置串口参数
                 try {
                     new SimpleSerialPortManager.QuickConfig()
@@ -80,6 +69,15 @@ public class SerialPortPlugin extends CordovaPlugin {
 
                 // 打开串口
                 serialPortManager = SimpleSerialPortManager.getInstance();
+                // 单例可能仍持有上一次 Activity 打开的旧串口与旧回调，
+                // 先关闭，避免旧回调继续向已销毁的 WebView 推送数据（destroyed WebView）
+                if (serialPortManager.isSerialPortOpened()) {
+                    try {
+                        serialPortManager.closeSerialPort();
+                    } catch (Exception e) {
+                        // 忽略关闭时的错误
+                    }
+                }
                 boolean openResult = serialPortManager.openSerialPort(port, baudRate, data -> {
                     // 数据接收回调，如果有监听器则推送数据
                     CallbackContext currentCallback = readCallback;
@@ -113,6 +111,24 @@ public class SerialPortPlugin extends CordovaPlugin {
         PluginResult successResult = new PluginResult(PluginResult.Status.OK, "Data listener set");
         successResult.setKeepCallback(true);
         callbackContext.sendPluginResult(successResult);
+    }
+
+    @Override
+    public void onDestroy() {
+        // WebView/Activity 销毁时关闭串口并清空回调，
+        // 避免 SimpleSerialPortManager 单例继续通过已销毁的 WebView 推送数据，
+        // 否则会报 "destroyed WebView" 且 485 返回数据丢失。
+        if (serialPortManager != null) {
+            try {
+                serialPortManager.closeSerialPort();
+            } catch (Exception e) {
+                // 忽略关闭时的错误
+            }
+            serialPortManager = null;
+        }
+        readCallback = null;
+        isInitialized = false;
+        super.onDestroy();
     }
  
     // 将字节数组转换为大写十六进制字符串（无空格），例如: 0x0A -> "0A"
