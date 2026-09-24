@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-plugin-yz" version="1.0.0">
+    id="cordova-plugin-yz" version="1.1.0">
     <name>yz</name>
     <description>Cordova Android bridge for the YZ IoT vendor AAR.</description>
     <license>ISC</license>
@@ -20,7 +20,7 @@
             </feature>
         </config-file>
         <source-file src="src/android/YzPlugin.java" target-dir="src/com/yztiot/cordova" />
-        <resource-file src="libs/yztiotdemo.aar" target="libs/yztiotdemo.aar" />
+        <resource-file src="libs/yztitoapi.aar" target="libs/yztitoapi.aar" />
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
     </platform>
 </plugin>

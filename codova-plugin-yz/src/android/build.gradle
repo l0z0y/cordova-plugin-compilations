@@ -4,5 +4,5 @@ repositories {
 }
 
 dependencies {
-    implementation(name: 'yztiotdemo', ext: 'aar')
+    implementation(name: 'yztitoapi', ext: 'aar')
 }

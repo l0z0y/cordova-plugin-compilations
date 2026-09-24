@@ -21,7 +21,7 @@ var api = {};
  * 无参数方法列表：用于生成设备信息、系统信息、存储、显示、音量和亮度等查询方法。
  */
 [
-    'getDeviceVersion', 'getAndroidVersion', 'getIccids', 'getJARVersion', 'getDeviceID',
+    'getDeviceVersion', 'getAndroidVersion', 'getJARVersion', 'getDeviceID',
     'getSDKVersion', 'getTotalInternalMemorySize', 'getFreeMemorySize', 'getInternalSDCardPath',
     'getExternalSDCardPath', 'getUsbStoragePath', 'getSystemDate', 'getSystemTime',
     'getDisplayMode', 'getDisplayHeight', 'getDisplayWidth', 'getDisplayDensity',
@@ -62,6 +62,97 @@ api.isExist = function (path, success, error) {
  */
 api.getGpioValue = function (port, success, error) {
     call('getGpioValue', [port], success, error);
+};
+
+/**
+ * 获取实体按键触摸模式。
+ * @param {Function} success 成功回调，参数为 Number：0 表示 ILITEK，1 表示 FORWARD。
+ * @param {Function} error 失败回调，参数为错误信息。
+ */
+api.getTouchMode = function (success, error) {
+    call('getTouchMode', [], success, error);
+};
+
+/**
+ * 设置实体按键触摸模式。
+ * @param {Number} mode 模式：0 表示 ILITEK，1 表示 FORWARD。
+ * @param {Function} success 成功回调，无返回值。
+ * @param {Function} error 失败回调，参数为错误信息。
+ */
+api.setTouchMode = function (mode, success, error) {
+    call('setTouchMode', [mode], success, error);
+};
+
+/**
+ * 模拟按下实体按键 PI4（默认按压 150ms，需设备存在 /data/local/tmp/pi4_sim 通道）。
+ * @param {Function} success 成功回调，无返回值。
+ * @param {Function} error 失败回调，参数为错误信息。
+ */
+api.simulatePi4Press = function (success, error) {
+    call('simulatePi4Press', [], success, error);
+};
+
+/**
+ * 创建触摸模式观察对象。
+ * 原生层轮询 manager.getTouchMode()；首次读取到有效值时通知一次，
+ * 后续只有模式变化（0↔1）时才通知。通知值只有数字 0 或 1。
+ * @param {Object} [options] 可选配置对象。
+ * @param {Number} [options.interval=100] 轮询间隔，单位为毫秒，最小值为 20。
+ * @returns {Object} 触摸模式观察对象，包含 subscribe 方法。
+ */
+api.observeTouchMode = function (options) {
+    options = options || {};
+    var interval = Math.max(20, Number(options.interval) || 100);
+    var subscribers = [];
+    var started = false;
+    var stopped = false;
+
+    /**
+     * 订阅触摸模式变化。
+     * @param {Function} next 模式变化回调，参数为 Number，只会收到 0 或 1。
+     * @param {Function} [error] 错误回调，参数为错误信息。
+     * @returns {Object} 订阅对象，包含 unsubscribe 方法。
+     */
+    function subscribe(next, error) {
+        if (typeof next !== 'function') {
+            throw new TypeError('subscribe requires a callback');
+        }
+        var subscriber = {
+            next: next,
+            error: typeof error === 'function' ? error : function () {}
+        };
+        subscribers.push(subscriber);
+
+        // 第一个订阅者到来时启动原生轮询；多个订阅者共用同一个轮询线程。
+        if (!started) {
+            started = true;
+            call('observeTouchMode', [interval], function (value) {
+                if (stopped) return;
+                subscribers.slice().forEach(function (item) {
+                    item.next(Number(value));
+                });
+            }, function (message) {
+                if (stopped) return;
+                subscribers.slice().forEach(function (item) {
+                    item.error(message);
+                });
+            });
+        }
+
+        return {
+            /** 取消当前订阅；最后一个订阅取消后，原生轮询线程也会停止。 */
+            unsubscribe: function () {
+                var index = subscribers.indexOf(subscriber);
+                if (index !== -1) subscribers.splice(index, 1);
+                if (!subscribers.length && !stopped) {
+                    stopped = true;
+                    call('stopObservingTouchMode', [], function () {}, function () {});
+                }
+            }
+        };
+    }
+
+    return { subscribe: subscribe };
 };
 
 /**

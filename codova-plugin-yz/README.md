@@ -1,9 +1,9 @@
 # cordova-plugin-yz
 
-`cordova-plugin-yz` 是一个仅支持 Android 的 Cordova 插件，用于调用供应商提供的 `yztiotdemo.aar`。该 AAR 中的核心类为：
+`cordova-plugin-yz` 是一个仅支持 Android 的 Cordova 插件，用于调用供应商提供的 `yztitoapi.aar`。该 AAR 中的核心类为：
 
 ```java
-com.yztiot.yztiotdemo.yztiotManager
+com.yztiot.yztitoapi.yztiotManager
 ```
 
 插件已经将 AAR 放在插件根目录的 `libs` 文件夹中：
@@ -11,7 +11,7 @@ com.yztiot.yztiotdemo.yztiotManager
 ```text
 cordova-plugin-yz/
 ├── libs/
-│   └── yztiotdemo.aar
+│   └── yztitoapi.aar
 ├── src/
 │   └── android/
 │       ├── YzPlugin.java
@@ -40,13 +40,13 @@ cordova plugin add D:\Code\plugin\codova-plugin-yz
 安装后，插件会把：
 
 ```text
-libs/yztiotdemo.aar
+libs/yztitoapi.aar
 ```
 
 复制到 Android 工程的：
 
 ```text
-platforms/android/app/src/main/libs/yztiotdemo.aar
+platforms/android/app/src/main/libs/yztitoapi.aar
 ```
 
 然后执行构建：
@@ -147,9 +147,6 @@ window.yz.getExternalSDCardPath(console.log, console.error)
 
 // 获取 U 盘路径，没有 U 盘时可能返回 null
 window.yz.getUsbStoragePath(console.log, console.error)
-
-// 读取 4G SIM 卡 ICCID 列表
-window.yz.getIccids(console.log, console.error)
 ```
 
 ## 四、文件、应用和页面操作
@@ -211,7 +208,7 @@ window.yz.setGpioValue("GPIO_A5", 1, () => console.log("GPIO 输出设置成功"
 
 ### 5.3 GPIO 持续监听
 
-由于供应商 AAR 没有提供 GPIO 回调监听接口，插件原生层为每个 GPIO 创建一个专用轮询线程，轮询 `/proc/rp_gpio/<GPIO名称>`。
+由于供应商 AAR 没有提供 GPIO 回调监听接口，插件原生层为每个 GPIO 创建一个专用轮询线程，轮询 `/proc/yz_gpio/<GPIO名称>`。
 
 通知规则：
 
@@ -259,7 +256,27 @@ subscription1.unsubscribe()
 subscription2.unsubscribe()
 ```
 
-## 六、网络操作
+## 六、实体按键（触摸模式）
+
+实体按键 PI4 相关接口：读取 / 切换触摸芯片模式，以及模拟按下实体按键。
+
+```typescript
+// 获取当前触摸模式：0=ILITEK，1=FORWARD，其他值表示未知
+window.yz.getTouchMode((mode: number) => {
+    const name = mode === 1 ? "FORWARD" : mode === 0 ? "ILITEK" : "未知"
+    console.log("当前触摸模式：", name)
+}, console.error)
+
+// 设置触摸模式：0=ILITEK，1=FORWARD
+window.yz.setTouchMode(1, () => console.log("切换触摸模式成功"), console.error)
+
+// 模拟按下实体按键 PI4（默认按压 150ms）
+window.yz.simulatePi4Press(() => console.log("已模拟按下 PI4"), console.error)
+```
+
+> `setTouchMode` 与 `simulatePi4Press` 依赖设备上的 `/data/local/tmp/pi4_sim` 通道；AAR 还提供带按压时长的重载 `simulatePi4Press(int ms)`，插件当前暴露的是默认 150ms 的无参版本。
+
+## 七、网络操作
 
 ```typescript
 // 获取网卡 IPv4 地址，例如 eth0、wlan0、ppp0
@@ -275,7 +292,7 @@ window.yz.setStaticIP("dhcp", "0.0.0.0", "0", "0.0.0.0", "0.0.0.0", console.log,
 window.yz.execSuCmd("ifconfig eth0 up", console.log, console.error)
 ```
 
-## 七、时间操作
+## 八、时间操作
 
 ```typescript
 // 获取系统日期，格式通常为 yyyy/MM/dd
@@ -294,7 +311,7 @@ window.yz.setSystemTime(new Date(), () => console.log("系统时间设置成功"
 window.yz.setSystemTime(Date.now(), console.log, console.error)
 ```
 
-## 八、显示、亮度和旋转
+## 九、显示、亮度和旋转
 
 ```typescript
 // 获取屏幕分辨率，例如 1920x1080
@@ -324,7 +341,7 @@ window.yz.setRotation(1, console.log, console.error)
 window.yz.inputkeyevent(3, console.log, console.error)
 ```
 
-## 九、音量和桌面
+## 十、音量和桌面
 
 ```typescript
 // 获取最大音量和当前音量
@@ -342,7 +359,7 @@ window.yz.setSystemVolumeIndex(10, console.log, console.error)
 window.yz.setDefaultLauncher("com.example.launcher", "com.example.launcher.MainActivity", console.log, console.error)
 ```
 
-## 十、设备控制
+## 十一、设备控制
 
 ```typescript
 // 关闭设备，通常需要厂商系统权限
@@ -355,7 +372,7 @@ window.yz.reboot(5, console.log, console.error)
 window.yz.startTcpAdb(true, console.log, console.error)
 ```
 
-## 十一、注意事项
+## 十二、注意事项
 
 1. 本插件只支持 Android。
 2. 供应商 AAR 的最低 Android SDK 为 API 29，建议使用 Android API 29 或更高版本构建。
@@ -366,7 +383,7 @@ window.yz.startTcpAdb(true, console.log, console.error)
 7. `observeGpioValue` 是文件轮询，不是硬件中断监听。轮询间隔越短，线程唤醒越频繁，建议根据实际响应速度设置合理的间隔。
 8. 页面、组件或 WebView 销毁时，应调用 `subscription.unsubscribe()`，避免继续保持业务层订阅。
 
-## 十二、插件导出名称
+## 十三、插件导出名称
 
 插件配置文件中的导出名称为：
 
