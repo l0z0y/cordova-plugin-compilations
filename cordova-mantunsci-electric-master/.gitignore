@@ -1,0 +1,11 @@
+node_modules/
+coverage/
+*.log
+.DS_Store
+# never commit credentials
+.env
+.env.*
+# apiDocs 抓取/解析的临时文件
+_docs2/
+_docs2_txt/
+_api-manifest.json

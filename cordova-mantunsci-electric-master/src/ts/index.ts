@@ -1,0 +1,95 @@
+/**
+ * @packageDocumentation
+ * Cordova plugin for the Mtsci 智慧式用电数据开放平台 (open.snd02.com).
+ *
+ * ```ts
+ * // 插件安装后从全局对象取，不需要 import：
+ * //   window.ElectricOpenPlatform / cordova.plugins.electricOpenPlatform
+ *
+ * await ElectricOpenPlatform.configure({
+ *   appKey: 'O000093290',
+ *   appSecret: '…',                    // keep out of source control
+ *   redirectUri: 'http://yourserverurl/receive',
+ *   projectCode: 'P00000104893',
+ *   storage: 'localStorage',
+ * });
+ *
+ * await ElectricOpenPlatform.login('yfdq01', '…');
+ * const boxes = await ElectricOpenPlatform.box.listOnline();
+ * const [live] = await ElectricOpenPlatform.channel.realtime({ mac: boxes[0].mac });
+ * await ElectricOpenPlatform.control.switchCircuit({ mac: boxes[0].mac, action: 'close', addr: 1 });
+ * ```
+ */
+export { ElectricOpenPlatform, ElectricOpenPlatformClient } from './client.js';
+
+// Core building blocks — exported so host apps can sign their own calls or
+// reuse the primitives in a backend.
+export { md5, formatTimestamp, formatAlarmTime } from './core/crypto.js';
+export {
+  signParams,
+  buildSignedRequest,
+  encodeForm,
+  signAuthCodeSecret,
+  signRefreshSecret,
+  type ParamValue,
+} from './core/sign.js';
+export {
+  postForm,
+  // 传输层：宿主可以显式指定实现（config.transport / setTransport），
+  // 避免被 detectHost() 的宿主探测误判。
+  createCordovaTransport,
+  createFetchTransport,
+  CORDOVA_PLUGIN_ID,
+  setTransport,
+  resetTransport,
+  currentTransport,
+  currentTransportName,
+  hasExplicitTransport,
+  type HttpRequest,
+  type HttpResponse,
+  type Transport,
+} from './core/http.js';
+export { detectHost, resolveTransport, type Host } from './core/host.js';
+export {
+  hasCordovaGlobal,
+  resolveCordovaExec,
+  type CordovaExecLike,
+} from './core/transport-cordova.js';
+export {
+  ElectricOpenPlatformError,
+  PlatformCodes,
+  TransportCodes,
+  describeCode,
+  isElectricOpenPlatformError,
+  type PlatformCode,
+  type TransportCode,
+} from './core/errors.js';
+export {
+  DEFAULT_BASE_URL,
+  type ElectricConfig,
+  type ElectricLogger,
+  type ElectricLogEvent,
+  type StorageMode,
+  type TokenSet,
+  type LoginResult,
+  type ApiEnvelope,
+} from './core/types.js';
+export { TokenStore, resolveBackend, resetStorageBackend } from './core/storage.js';
+export { AuthManager } from './core/auth.js';
+export { RouterClient, type CallOptions } from './core/router.js';
+export { verifyPushKey, type PushCmd } from './core/push.js';
+
+// Domain APIs (for typing custom wrappers) and every wire model / enum.
+export {
+  ProjectApi,
+  BoxApi,
+  ChannelApi,
+  ControlApi,
+  AlarmApi,
+  StatsApi,
+  SceneApi,
+  ThirdPartyDeviceApi,
+  parseThirdPartyData,
+} from './core/api.js';
+export { PushApi } from './core/push.js';
+export * from './core/models.js';
